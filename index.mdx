@@ -27,10 +27,9 @@ description: "Welcome to the home of your new documentation"
   ### 👇 Example:
   The parent component (`App`) passes a prop to the child (`User`) like this:
 
-  ```jsx
+   ```jsx
   const App = () => {
-    return <User name="skyWalker" />; /* you have to wrap everything except strings 
-    (numbers, bools, arrays) in curly braces while passing as props eg age={18} */
+    return <User name="skyWalker" />; // Use curly braces for non-strings like age={18}
   };
 
   const User = (props) => {
@@ -39,6 +38,35 @@ description: "Welcome to the home of your new documentation"
   };
 ```
 
-  </Accordion>
+
+</Accordion>
+
+<Accordion title="2. useState Hook & Destructuring Convention">
+  The `useState` hook in React is used to manage local component state.  
+  It **always returns an array with two elements**:
+
+  1. The current state value
+  2. A function to update the state
+
+  <img
+  src="/images/useState.png"
+  alt="useState Hook"
+/>
+
+  ### 🧠 Example:
+  ```jsx
+  const [count, setCount] = useState(0);
+  const state = useState(0);
+  console.log(state); // [0, 1]
+  ```
+   Destructuring Convention:
+
+  We generally destructure using the naming pattern:
+
+  ```jsx
+  const [x, setX] = useState(initialValue);
+  ```
+</Accordion>
+
 </AccordionGroup>
 
