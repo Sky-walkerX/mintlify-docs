@@ -1,0 +1,132 @@
+---
+title: 'JS Docs'
+description: 'Advanced JavaScript concepts explained with clear examples and gotchas'
+---
+
+## JavaScript Return Behavior in Arrow Functions
+
+Arrow functions in JavaScript can behave unexpectedly, especially when returning JSX or writing multi-line expressions. This guide explains the **two most confusing areas**: how you structure arrow functions and how you use `return`.
+
+<AccordionGroup>
+
+  <Accordion title="1. Arrow Functions: {} vs ()">
+    Arrow functions behave differently based on the body syntax:
+
+    ### ✅ Case 1: Curly braces `{}` require `return`
+    ```js
+    numbers.map(n => {
+      return <li>{n}</li>; // ✅ must use return
+    });
+    ```
+
+    ❌ If you forget `return`, nothing is returned:
+    ```js
+    numbers.map(n => {
+      <li>{n}</li>; // ❌ returns undefined
+    });
+    ```
+
+    ### ✅ Case 2: Parentheses `()` means implicit return
+    ```js
+    numbers.map(n => (
+      <li>{n}</li> // ✅ automatically returned
+    ));
+    ```
+
+    ❌ But this is invalid:
+    ```js
+    numbers.map(n => (
+      return <li>{n}</li>; // ❌ SyntaxError
+    ));
+    ```
+
+    ➤ **Summary**:
+    - `{}` → must use `return`
+    - `()` → auto-return, no `return` allowed
+  </Accordion>
+
+  <Accordion title="2. Return Keyword: Same Line vs Multi-line">
+    When using the `return` keyword in a normal function (or inside `{}` in an arrow function), be careful with how you place JSX.
+
+    ### ✅ Returning JSX on the same line
+    ```js
+    return <main>
+      Hello
+    </main>; // ✅ works fine
+    ```
+
+    ### ❌ Returning JSX on the next line without wrapping
+    ```js
+    return
+      <main>Hello</main>; // ❌ returns undefined
+    ```
+
+    JavaScript inserts a semicolon after `return` → `return;`
+
+    ### ✅ Proper way to return multi-line JSX
+    ```js
+    return (
+      <main>
+        <h1>Hello</h1>
+      </main>
+    );
+    ```
+
+    ➤ **Summary**:
+    - `return <JSX>` on **same line** → ✅ fine
+    - `return` on one line + JSX on next line → ❌ broken
+    - `return (` + multi-line JSX + `)` → ✅ correct
+  </Accordion>
+
+  <Accordion title="3. Importance of `key` in Lists">
+    In React, when rendering lists using methods like `.map()`, each element in the list should have a unique `key` prop.
+
+    The `key` helps React identify which items have changed, been added, or removed. Without it, React cannot reliably track individual elements during re-rendering, which can lead to inefficient updates or unexpected UI behavior.
+
+    Even though React will still render the list without a `key`, it shows a warning in the console and performs less optimally. In dynamic lists, missing keys can also break internal state or cause flickering.
+
+    The `key` doesn't show up in the UI — it's only for React's internal diffing algorithm to speed up and stabilize rendering.
+
+    ➤ In short, always include a unique `key` when rendering lists to ensure performance, consistency, and proper DOM reconciliation.
+  </Accordion>
+
+
+</AccordionGroup>
+
+## Summary
+
+<CardGroup>
+
+<Card
+  title="{} needs return"
+  icon="braces"
+  href="#"
+>
+  If you use `{}` in an arrow function, you must manually write `return`.
+</Card>
+
+<Card
+  title="() returns implicitly"
+  icon="arrow-left-right"
+  href="#"
+>
+  If you use `()`, you cannot use `return` — the expression is returned automatically.
+</Card>
+
+<Card
+  title="return on same line works"
+  icon="row-horizontal"
+  href="#"
+>
+  `return <div />;` works if JSX is on the same line.
+</Card>
+
+<Card
+  title="return + newline needs ()"
+  icon="layers"
+  href="#"
+>
+  For multi-line JSX after `return`, wrap it in `()` to avoid auto semicolon insertion.
+</Card>
+
+</CardGroup>
