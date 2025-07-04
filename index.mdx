@@ -68,5 +68,186 @@ description: "Welcome to the home of your new documentation"
   ```
 </Accordion>
 
+<Accordion title="3. useEffect Hook">
+  The `useEffect` hook lets you **run side effects** in your React components — like fetching data, updating the DOM, or setting up subscriptions.
+
+  It runs **after the component renders**, and can be configured to run:
+  - After **every render**
+  - Only **once on mount**
+  - Or **when specific dependencies change**
+
+  ### 🔧 Basic Syntax:
+  ```jsx
+  useEffect(() => {
+    // code here runs after render
+  }, [dependencies]);
+```
+Example 1: Run only on first render
+```jsx
+useEffect(() => {
+  console.log("Component mounted!");
+}, []);
+```
+
+Example 2: Run when a value changes
+```jsx
+const [count, setCount] = useState(0);
+
+useEffect(() => {
+  console.log("Count changed:", count);
+}, [count]);
+
+```
+
+Example 3: Cleanup function
+```jsx
+useEffect(() => {
+  const interval = setInterval(() => {
+    console.log("Tick...");
+  }, 1000);
+
+  return () => clearInterval(interval); // runs on unmount or before re-running
+}, []);
+
+```
+
+</Accordion>
+
+
+<Accordion title="4. useContext Hook & Global State Sharing">
+  The `useContext` hook lets you **share state or values globally** across components — **without manually passing props** at every level (aka "prop drilling").
+
+  It’s perfect for things like:
+  - Theme or language settings
+  - Auth/user data
+  - Global app config or state
+
+  ### 🧠 Basic Setup:
+
+  ```jsx
+  // 1️⃣ Create a context
+  const MyContext = React.createContext();
+
+  // 2️⃣ Provide the value somewhere at the top level
+  <MyContext.Provider value={"Hello"}>
+    <Child />
+  </MyContext.Provider>
+
+  // 3️⃣ Consume it anywhere in the tree
+  const value = useContext(MyContext);
+```
+
+ Example:
+ ```jsx
+ const ThemeContext = React.createContext();
+
+const App = () => {
+  return (
+    <ThemeContext.Provider value="dark">
+      <Header />
+    </ThemeContext.Provider>
+  );
+};
+
+const Header = () => {
+  const theme = useContext(ThemeContext);
+  return <h1>Theme: {theme}</h1>; // Theme: dark
+};
+ ```
+
+ When to Use:
+
+  - You want to avoid prop drilling
+
+  - You need shared state/data accessible across many components
+
+  - You're building global providers (theme, user, etc.)
+
+➤ useContext is often used with useReducer or useState to build lightweight global state managers.
+</Accordion>
+
+
+<Accordion title="5. useReducer Hook & State Management">
+  The `useReducer` hook is an alternative to `useState` for managing **more complex state logic** — especially when:
+  - The next state depends on the previous state
+  - You want to group related state updates together
+  - You're building Redux-style reducer logic
+
+  It uses a **reducer function** that decides how the state should change based on an action.
+
+  ### 🧠 Basic Syntax:
+  ```jsx
+  const [state, dispatch] = useReducer(reducerFn, initialState);
+  ```
+  - state → current state value
+
+  - dispatch → function to trigger state changes
+
+  - reducerFn → (state, action) => newState
+
+  Example
+  ```jsx  
+  const reducer = (state, action) => {
+  switch (action.type) {
+    case "increment":
+      return { count: state.count + 1 };
+    case "decrement":
+      return { count: state.count - 1 };
+    default:
+      return state;
+  }
+};
+
+const Counter = () => {
+  const [state, dispatch] = useReducer(reducer, { count: 0 });
+
+  return (
+    <>
+      <h2>Count: {state.count}</h2>
+      <button onClick={() => dispatch({ type: "increment" })}>+</button>
+      <button onClick={() => dispatch({ type: "decrement" })}>-</button>
+    </>
+  );
+};
+```
+
+➤  useReducer makes your state transitions more predictable, testable, and scalable in larger components.
+</Accordion>
+
+<Accordion title="6. useRef Hook & DOM References">
+  The `useRef` hook in React is used to **access DOM elements directly** or to **store mutable values** that **don’t trigger re-renders**.
+
+  It returns a **ref object** with a `.current` property that you can update or read.
+
+  ### 🧠 Syntax:
+  ```jsx
+  const myRef = useRef(initialValue);
+  ```
+  Storing mutable values (like instance variables):
+  ```jsx
+  const countRef = useRef(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      countRef.current += 1;
+      console.log("Count (not reactive):", countRef.current);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  ```
+
+   When to Use:
+
+  - To directly manipulate DOM elements (like .focus(), .scrollIntoView())
+
+  - To persist data across renders without re-rendering the component
+
+  - To store previous values or timeout/interval IDs
+
+➤ useRef is great when you want to persist a value without causing a re-render — unlike useState.
+</Accordion>
+
 </AccordionGroup>
 
