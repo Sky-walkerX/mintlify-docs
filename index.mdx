@@ -1,17 +1,47 @@
 ---
-title: React Docs v19
-description: "Welcome to the home of your new documentation"
+title: 'JS Docs-2'
+description: 'Advanced JavaScript concepts explained with clear examples and gotchas'
 ---
 
-<img
-  className="block dark:hidden"
-  src="/images/hero-light.png"
-  alt="Hero Light"
-/>
-<img
-  className="hidden dark:block"
-  src="/images/hero-dark.png"
-  alt="Hero Dark"
-/>
+## JavaScript Return Behavior in Arrow Functions
 
+Arrow functions in JavaScript can behave unexpectedly, especially when returning JSX or writing multi-line expressions. This guide explains the **two most confusing areas**: how you structure arrow functions and how you use `return`.
 
+<AccordionGroup>
+
+  <Accordion title="1. Arrow Functions: {} vs ()">
+    Arrow functions behave differently based on the body syntax:
+
+    ### ✅ Case 1: Curly braces `{}` require `return`
+    ```js
+    numbers.map(n => {
+      return <li>{n}</li>; // ✅ must use return
+    });
+    ```
+
+    ❌ If you forget `return`, nothing is returned:
+    ```js
+    numbers.map(n => {
+      <li>{n}</li>; // ❌ returns undefined
+    });
+    ```
+
+    ### ✅ Case 2: Parentheses `()` means implicit return
+    ```js
+    numbers.map(n => (
+      <li>{n}</li> // ✅ automatically returned
+    ));
+    ```
+
+    ❌ But this is invalid:
+    ```js
+    numbers.map(n => (
+      return <li>{n}</li>; // ❌ SyntaxError
+    ));
+    ```
+
+    ➤ **Summary**:
+    - `{}` → must use `return`
+    - `()` → auto-return, no `return` allowed
+  </Accordion>
+</AccordionGroup>
