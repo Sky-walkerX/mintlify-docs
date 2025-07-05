@@ -249,5 +249,52 @@ const Counter = () => {
 ➤ useRef is great when you want to persist a value without causing a re-render — unlike useState.
 </Accordion>
 
+<Accordion title="7. Suspense in React">
+  React Suspense is a feature that lets you wait ("suspend") rendering of a component until some async operation is done, like data fetching or lazy-loading.
+
+  Old Way:
+  ```jsx
+  if (!data) return <div>Loading...</div>
+  return <div>{data.name}</div>
+  ```
+
+  With Suspense:
+  ```jsx
+  <Suspense fallback={<div>Loading...</div>}>
+    <Profile />
+  </Suspense>
+  ```
+</Accordion>
+
+<Accordion title="8. use API in React">
+  use() lets you directly await promises inside a component — especially useful for:
+  - Async components (like await import() / fetch)
+
+  - Server components (React Server Components)
+
+  - Data fetching during rendering
+
+  But React doesn’t know when the promise will resolve — so it needs a Suspense boundary to pause and show a fallback UI until the promise completes.
+
+  Old Way:
+  ```jsx
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/data')
+      .then(res => res.json())
+      .then(setData);
+  }, []);
+
+  ```
+
+  With use:
+  ```jsx
+  const data = use(fetch('/api/data').then(res => res.json()));
+
+  ```
+</Accordion>
+
+
 </AccordionGroup>
 
