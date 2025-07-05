@@ -1,47 +1,299 @@
 ---
-title: 'JS Docs-2'
-description: 'Advanced JavaScript concepts explained with clear examples and gotchas'
+title: React Docs v19
+description: "Welcome to the home of your new documentation"
 ---
 
-## JavaScript Return Behavior in Arrow Functions
+<img
+  className="block dark:hidden"
+  src="/images/hero-light.png"
+  alt="Hero Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/hero-dark.png"
+  alt="Hero Dark"
+/>
 
-Arrow functions in JavaScript can behave unexpectedly, especially when returning JSX or writing multi-line expressions. This guide explains the **two most confusing areas**: how you structure arrow functions and how you use `return`.
+
+## Core React Concepts
 
 <AccordionGroup>
 
-  <Accordion title="1. Arrow Functions: {} vs ()">
-    Arrow functions behave differently based on the body syntax:
+<Accordion title="1. Understanding Props in React">
+  In React, `props` (short for **properties**) are used to **pass data from a parent component to a child component**.
 
-    ### ✅ Case 1: Curly braces `{}` require `return`
-    ```js
-    numbers.map(n => {
-      return <li>{n}</li>; // ✅ must use return
-    });
-    ```
+  React automatically provides a `props` object to every functional component. This object contains all the values passed as attributes when the component is used.
 
-    ❌ If you forget `return`, nothing is returned:
-    ```js
-    numbers.map(n => {
-      <li>{n}</li>; // ❌ returns undefined
-    });
-    ```
+  ### 👇 Example:
+  The parent component (`App`) passes a prop to the child (`User`) like this:
 
-    ### ✅ Case 2: Parentheses `()` means implicit return
-    ```js
-    numbers.map(n => (
-      <li>{n}</li> // ✅ automatically returned
-    ));
-    ```
+   ```jsx
+  const App = () => {
+    return <User name="skyWalker" />; // Use curly braces for non-strings like age={18}
+  };
 
-    ❌ But this is invalid:
-    ```js
-    numbers.map(n => (
-      return <li>{n}</li>; // ❌ SyntaxError
-    ));
-    ```
+  const User = (props) => {
+    console.log(props); // { name: "skyWalker" }
+    return <section></section>;
+  };
+```
+</Accordion>
 
-    ➤ **Summary**:
-    - `{}` → must use `return`
-    - `()` → auto-return, no `return` allowed
-  </Accordion>
+<Accordion title="2. useState Hook & Destructuring Convention">
+  The `useState` hook in React is used to manage local component state.  
+  It **always returns an array with two elements**:
+
+  1. The current state value
+  2. A function to update the state
+
+  <img
+  src="/images/useState.png"
+  alt="useState Hook"
+/>
+
+  ### 🧠 Example:
+  ```jsx
+  const [count, setCount] = useState(0);
+  const state = useState(0);
+  console.log(state); // [0, 1]
+  ```
+   Destructuring Convention:
+
+  We generally destructure using the naming pattern:
+
+  ```jsx
+  const [x, setX] = useState(initialValue);
+  ```
+</Accordion>
+
+<Accordion title="3. useEffect Hook">
+  The `useEffect` hook lets you **run side effects** in your React components — like fetching data, updating the DOM, or setting up subscriptions.
+
+  It runs **after the component renders**, and can be configured to run:
+  - After **every render**
+  - Only **once on mount**
+  - Or **when specific dependencies change**
+
+  ### 🔧 Basic Syntax:
+  ```jsx
+  useEffect(() => {
+    // code here runs after render
+  }, [dependencies]);
+```
+Example 1: Run only on first render
+```jsx
+useEffect(() => {
+  console.log("Component mounted!");
+}, []);
+```
+
+Example 2: Run when a value changes
+```jsx
+const [count, setCount] = useState(0);
+
+useEffect(() => {
+  console.log("Count changed:", count);
+}, [count]);
+
+```
+
+Example 3: Cleanup function
+```jsx
+useEffect(() => {
+  const interval = setInterval(() => {
+    console.log("Tick...");
+  }, 1000);
+
+  return () => clearInterval(interval); // runs on unmount or before re-running
+}, []);
+
+```
+
+</Accordion>
+
+
+<Accordion title="4. useContext Hook & Global State Sharing">
+  The `useContext` hook lets you **share state or values globally** across components — **without manually passing props** at every level (aka "prop drilling").
+
+  It’s perfect for things like:
+  - Theme or language settings
+  - Auth/user data
+  - Global app config or state
+
+  ### 🧠 Basic Setup:
+
+  ```jsx
+  // 1️⃣ Create a context
+  const MyContext = React.createContext();
+
+  // 2️⃣ Provide the value somewhere at the top level
+  <MyContext.Provider value={"Hello"}>
+    <Child />
+  </MyContext.Provider>
+
+  // 3️⃣ Consume it anywhere in the tree
+  const value = useContext(MyContext);
+```
+
+ Example:
+ ```jsx
+ const ThemeContext = React.createContext();
+
+const App = () => {
+  return (
+    <ThemeContext.Provider value="dark">
+      <Header />
+    </ThemeContext.Provider>
+  );
+};
+
+const Header = () => {
+  const theme = useContext(ThemeContext);
+  return <h1>Theme: {theme}</h1>; // Theme: dark
+};
+ ```
+
+ When to Use:
+
+  - You want to avoid prop drilling
+
+  - You need shared state/data accessible across many components
+
+  - You're building global providers (theme, user, etc.)
+
+➤ useContext is often used with useReducer or useState to build lightweight global state managers.
+</Accordion>
+
+
+<Accordion title="5. useReducer Hook & State Management">
+  The `useReducer` hook is an alternative to `useState` for managing **more complex state logic** — especially when:
+  - The next state depends on the previous state
+  - You want to group related state updates together
+  - You're building Redux-style reducer logic
+
+  It uses a **reducer function** that decides how the state should change based on an action.
+
+  ### 🧠 Basic Syntax:
+  ```jsx
+  const [state, dispatch] = useReducer(reducerFn, initialState);
+  ```
+  - state → current state value
+
+  - dispatch → function to trigger state changes
+
+  - reducerFn → (state, action) => newState
+
+  Example
+  ```jsx  
+  const reducer = (state, action) => {
+  switch (action.type) {
+    case "increment":
+      return { count: state.count + 1 };
+    case "decrement":
+      return { count: state.count - 1 };
+    default:
+      return state;
+  }
+};
+
+const Counter = () => {
+  const [state, dispatch] = useReducer(reducer, { count: 0 });
+
+  return (
+    <>
+      <h2>Count: {state.count}</h2>
+      <button onClick={() => dispatch({ type: "increment" })}>+</button>
+      <button onClick={() => dispatch({ type: "decrement" })}>-</button>
+    </>
+  );
+};
+```
+
+➤  useReducer makes your state transitions more predictable, testable, and scalable in larger components.
+</Accordion>
+
+<Accordion title="6. useRef Hook & DOM References">
+  The `useRef` hook in React is used to **access DOM elements directly** or to **store mutable values** that **don’t trigger re-renders**.
+
+  It returns a **ref object** with a `.current` property that you can update or read.
+
+  ### 🧠 Syntax:
+  ```jsx
+  const myRef = useRef(initialValue);
+  ```
+  Storing mutable values (like instance variables):
+  ```jsx
+  const countRef = useRef(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      countRef.current += 1;
+      console.log("Count (not reactive):", countRef.current);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  ```
+
+   When to Use:
+
+  - To directly manipulate DOM elements (like .focus(), .scrollIntoView())
+
+  - To persist data across renders without re-rendering the component
+
+  - To store previous values or timeout/interval IDs
+
+➤ useRef is great when you want to persist a value without causing a re-render — unlike useState.
+</Accordion>
+
+<Accordion title="7. Suspense in React">
+  React Suspense is a feature that lets you wait ("suspend") rendering of a component until some async operation is done, like data fetching or lazy-loading.
+
+  Old Way:
+  ```jsx
+  if (!data) return <div>Loading...</div>
+  return <div>{data.name}</div>
+  ```
+
+  With Suspense:
+  ```jsx
+  <Suspense fallback={<div>Loading...</div>}>
+    <Profile />
+  </Suspense>
+  ```
+</Accordion>
+
+<Accordion title="8. use API in React">
+  use() lets you directly await promises inside a component — especially useful for:
+  - Async components (like await import() / fetch)
+
+  - Server components (React Server Components)
+
+  - Data fetching during rendering
+
+  But React doesn’t know when the promise will resolve — so it needs a Suspense boundary to pause and show a fallback UI until the promise completes.
+
+  Old Way:
+  ```jsx
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/data')
+      .then(res => res.json())
+      .then(setData);
+  }, []);
+
+  ```
+
+  With use:
+  ```jsx
+  const data = use(fetch('/api/data').then(res => res.json()));
+
+  ```
+</Accordion>
+
+
 </AccordionGroup>
+
+
